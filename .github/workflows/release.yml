@@ -18,12 +18,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Update Tag v1.0.4 to Latest Commit
+      - name: Delete Existing Tag Locally & Remotely
         run: |
-          git tag -f v1.0.4
-          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git refs/tags/v1.0.4
+          git tag -d v1.0.4 || true
+          git push --delete origin v1.0.4 || true
 
-      - name: Update GitHub Release (Optional)
+      - name: Create and Push Updated Tag
+        run: |
+          git tag v1.0.4
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git v1.0.4
+
+      - name: Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.4
@@ -33,6 +38,7 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Trigger JitPack Rebuild
+
+      - name: Trigger JitPack Rebuild (Clean)
         run: |
-          curl -X POST https://jitpack.io/com/github/IndumathyCoherent/libentityservice/v1.0.4/build.log
+          curl -X POST https://jitpack.io/com/github/${{ github.repository }}/v1.0.4/build.log
