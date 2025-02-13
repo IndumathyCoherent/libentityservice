@@ -35,4 +35,8 @@ public class AuditsEntity implements Serializable {
 	@JsonProperty("age")
 	private String age;
 
+	@Column(name = "gender")
+	@JsonProperty("gender")
+	private String gender;
+
 }
