@@ -1,0 +1,41 @@
+name: Release on Commit
+
+on:
+  push:
+    branches:
+      - main # or your desired branch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Current Date and Time
+        run: echo "RELEASE_DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: Get Short Commit Hash
+        run: echo "SHORT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Generate Tag Name
+        run: |
+          TAG_NAME="v${{ env.RELEASE_DATE }}-${{ env.SHORT_HASH }}"
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+
+      - name: Push Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ env.TAG_NAME }}
+          git push origin ${{ env.TAG_NAME }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
