@@ -19,7 +19,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.ALWAYS)
 @ToString
-public class AuditsEntity implements Serializable {
+public class Audits implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
